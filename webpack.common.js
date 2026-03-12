@@ -44,7 +44,7 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      CANVAS_RENDERER: JSON.stringify(true),
+      CANVAS_RENDERER: JSON.stringify(false),
       WEBGL_RENDERER: JSON.stringify(true),
     }),
     new HtmlWebpackPlugin({
@@ -53,8 +53,8 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         {
-          from: path.resolve(__dirname, 'assets'),
-          to: path.resolve(__dirname, 'build/assets'),
+          from: 'assets',
+          to: 'assets',
         },
       ],
     }),

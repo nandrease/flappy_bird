@@ -12,6 +12,9 @@ module.exports = merge(common, {
     maxAssetSize: 900000,
   },
   optimization: {
+    usedExports: true,
+    minimize: true,
+    splitChunks: false,
     minimizer: [
       new TerserPlugin({
         terserOptions: {
@@ -25,7 +28,7 @@ module.exports = merge(common, {
   plugins: [new CleanWebpackPlugin()],
   output: {
     path: path.resolve(__dirname, 'build'),
-    filename: 'bundle.js',
-    publicPath: '/flappy_bird/',
+    filename: '[name].js',
+    publicPath: './',
   },
 });

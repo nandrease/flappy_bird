@@ -15,15 +15,7 @@ module.exports = merge(common, {
     usedExports: true,
     minimize: true,
     splitChunks: false,
-    minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          output: {
-            comments: false,
-          },
-        },
-      }),
-    ],
+    minimizer: [new TerserPlugin()],
   },
   plugins: [new CleanWebpackPlugin()],
   output: {

@@ -17,12 +17,14 @@ class PlayScene extends Phaser.Scene {
     this.scoreText = null;
     this.bestScore = 0;
     this.bestScoreText = null;
+    this.isPaused = false;
   }
 
   preload() {
     this.load.image('sky', 'assets/sky.png');
     this.load.image('bird', 'assets/bird.png');
     this.load.image('pipe', 'assets/pipe.png');
+    this.load.image('pause', 'assets/pause.png');
   }
   create() {
     this.createBackground();
@@ -41,6 +43,20 @@ class PlayScene extends Phaser.Scene {
 
   createBackground() {
     this.add.image(0, 0, 'sky').setOrigin(0);
+    const pauseButton = this.add
+      .image(this.config.width - 10, this.config.height - 10, 'pause')
+      .setScale(3)
+      .setDepth(1)
+      .setOrigin(1)
+      .setInteractive();
+
+    pauseButton.on('pointerdown', () => {
+      if (this.isPaused) {
+        this.resumeGame();
+      } else {
+        this.pauseGame();
+      }
+    });
   }
 
   createBird() {
@@ -135,7 +151,19 @@ class PlayScene extends Phaser.Scene {
       localStorage.setItem('bestScore', this.bestScore);
       this.bestScoreText.setText(`Best Score: ${bestScore}`);
     }
+  }
 
+  pauseGame() {
+    this.isPaused = true;
+    this.physics.pause();
+    this.bird.setTint(0x663399);
+    this.saveBestScore();
+  }
+
+  resumeGame() {
+    this.isPaused = false;
+    this.physics.resume();
+    this.bird.clearTint();
   }
 
   gameOver() {

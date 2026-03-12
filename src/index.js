@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import PlayScene from './scenes/PlayScene';
+import MenuScene from './scenes/MenuScene';
+import PreloadScene from './scenes/PreloadScene';
 
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
@@ -11,6 +13,10 @@ const SHARED_CONFIG = {
   startPosition: BIRD_POSITION,
 };
 
+const scenes = [PreloadScene, MenuScene, PlayScene];
+const createScene = Scene => new Scene(SHARED_CONFIG);
+const initScenes = () => scenes.map(createScene);
+
 const config = {
   type: Phaser.AUTO,
   ...SHARED_CONFIG,
@@ -20,7 +26,7 @@ const config = {
       debug: true,
     },
   },
-  scene: [new PlayScene(SHARED_CONFIG)],
+  scene: initScenes(),
 };
 
 const game = new Phaser.Game(config);

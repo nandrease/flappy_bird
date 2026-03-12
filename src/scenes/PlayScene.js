@@ -1,8 +1,8 @@
-import Phaser from 'phaser';
+import BaseScene from './BaseScene';
 
-class PlayScene extends Phaser.Scene {
+class PlayScene extends BaseScene {
   constructor(config) {
-    super('PlayScene');
+    super('PlayScene', config);
     this.config = {
       ...config,
       pipeVerticalDistanceRange: [150, 250],
@@ -20,14 +20,9 @@ class PlayScene extends Phaser.Scene {
     this.isPaused = false;
   }
 
-  preload() {
-    this.load.image('sky', 'assets/sky.png');
-    this.load.image('bird', 'assets/bird.png');
-    this.load.image('pipe', 'assets/pipe.png');
-    this.load.image('pause', 'assets/pause.png');
-  }
   create() {
-    this.createBackground();
+    super.create();
+    this.createPause();
     this.createBird();
     this.createPipes();
     this.createColliders();
@@ -41,8 +36,7 @@ class PlayScene extends Phaser.Scene {
     this.recyclePipes();
   }
 
-  createBackground() {
-    this.add.image(0, 0, 'sky').setOrigin(0);
+  createPause() {
     const pauseButton = this.add
       .image(this.config.width - 10, this.config.height - 10, 'pause')
       .setScale(3)

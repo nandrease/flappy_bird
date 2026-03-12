@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "description": "Webpack game with Phraser",
   "main": "index.js",
+  "homepage": "https://nandrease.github.io/flappy_bird",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config webpack.prod.js",
     "dev": "webpack serve --config webpack.common.js",
-    "dev-fb": "webpack serve --config webpack.fb.js"
+    "dev-fb": "webpack serve --config webpack.fb.js",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "author": "",
   "license": "ISC",
@@ -26,6 +29,7 @@
     "terser-webpack-plugin": "^5.4.0",
     "webpack": "^5.105.4",
     "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.3"
+    "webpack-dev-server": "^5.2.3",
+    "gh-pages": "^6.1.1"
   }
 }

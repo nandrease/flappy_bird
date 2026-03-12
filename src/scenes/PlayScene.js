@@ -24,7 +24,7 @@ class PlayScene extends Phaser.Scene {
     this.createBackground();
     this.createBird();
     this.createPipes();
-    this.handleCollisions();
+    this.createColliders();
     this.handleInputs();
   }
 
@@ -41,34 +41,28 @@ class PlayScene extends Phaser.Scene {
   createBird() {
     this.bird = this.physics.add.sprite(this.config.startPosition.x, this.config.startPosition.y, 'bird').setOrigin(0);
     this.bird.body.gravity.y = 400;
+    this.bird.setCollideWorldBounds(true);
   }
 
   createPipes() {
     this.pipes = this.physics.add.group();
     for (let i = 0; i < this.config.PIPES_TO_RENDER; i++) {
-      const upperPipe = this.pipes.create(0, 0, 'pipe').setOrigin(0, 1);
-      const lowerPipe = this.pipes.create(0, 0, 'pipe').setOrigin(0, 0);
+      const upperPipe = this.pipes.create(0, 0, 'pipe').setImmovable(true).setOrigin(0, 1);
+      const lowerPipe = this.pipes.create(0, 0, 'pipe').setImmovable(true).setOrigin(0, 0);
 
       this.placePipe(upperPipe, lowerPipe);
     }
 
     this.pipes.setVelocityX(-200);
-
-    this.pipes.getChildren().forEach(pipe => {
-      pipe.body.allowGravity = false;
-      pipe.body.immovable = true;
-    });
   }
 
-  handleCollisions() {
-    this.physics.add.collider(this.bird, this.pipes, () => {
-      this.reset();
-    });
+  createColliders() {
+    this.physics.add.collider(this.bird, this.pipes, this.gameOver, null, this);
   }
 
   handleBirdCollisions() {
-    if (this.bird.y > this.config.height || this.bird.y < -this.bird.height) {
-      this.reset();
+    if (this.bird.getBounds().bottom >= this.config.height || this.bird.y <= 0) {
+      this.gameOver();
     }
   }
 
@@ -116,10 +110,17 @@ class PlayScene extends Phaser.Scene {
     });
   }
 
-  reset() {
-    this.bird.x = this.config.startPosition.x;
-    this.bird.y = this.config.startPosition.y;
-    this.bird.setVelocity(0, 0);
+  gameOver() {
+    this.physics.pause();
+    this.bird.setTint(0x663399);
+
+    this.time.addEvent({
+      delay: 1000,
+      callback: () => {
+        this.scene.restart();
+      },
+      loop: false,
+    });
   }
 }
 

@@ -3,7 +3,6 @@ import BaseScene from './BaseScene';
 const PIPES_TO_RENDER = 4;
 
 class PlayScene extends BaseScene {
-
   constructor(config) {
     super('PlayScene', config);
 
@@ -21,7 +20,7 @@ class PlayScene extends BaseScene {
 
     this.difficulties = {
       easy: {
-        pipeHorizontalDistanceRange: [350, 450],
+        pipeHorizontalDistanceRange: [300, 400],
         pipeVerticalDistanceRange: [150, 250],
       },
       medium: {
@@ -29,10 +28,10 @@ class PlayScene extends BaseScene {
         pipeVerticalDistanceRange: [100, 200],
       },
       hard: {
-        pipeHorizontalDistanceRange: [150, 250],
-        pipeVerticalDistanceRange: [50, 150],
+        pipeHorizontalDistanceRange: [200, 250],
+        pipeVerticalDistanceRange: [100, 150],
       },
-    }
+    };
   }
 
   create() {
@@ -53,18 +52,22 @@ class PlayScene extends BaseScene {
   }
 
   listenToEvents() {
-    if (this.pauseEvent) { return; }
+    if (this.pauseEvent) {
+      return;
+    }
 
     this.pauseEvent = this.events.on('resume', () => {
       this.initialTime = 3;
-      this.countDownText = this.add.text(...this.screenCenter, 'Fly in: ' + this.initialTime, this.fontOptions).setOrigin(0.5);
+      this.countDownText = this.add
+        .text(...this.screenCenter, 'Fly in: ' + this.initialTime, this.fontOptions)
+        .setOrigin(0.5);
       this.timedEvent = this.time.addEvent({
         delay: 1000,
         callback: this.countDown,
         callbackScope: this,
-        loop: true
-      })
-    })
+        loop: true,
+      });
+    });
   }
 
   countDown() {
@@ -72,6 +75,7 @@ class PlayScene extends BaseScene {
     this.countDownText.setText('Fly in: ' + this.initialTime);
     if (this.initialTime <= 0) {
       this.isPaused = false;
+      this.bird.anims.play('fly');
       this.countDownText.setText('');
       this.physics.resume();
       this.timedEvent.remove();
@@ -83,7 +87,19 @@ class PlayScene extends BaseScene {
   }
 
   createBird() {
-    this.bird = this.physics.add.sprite(this.config.startPosition.x, this.config.startPosition.y, 'bird').setOrigin(0);
+    this.bird = this.physics.add
+      .sprite(this.config.startPosition.x, this.config.startPosition.y, 'bird')
+      .setScale(3)
+      .setFlipX(1)
+      .setOrigin(0);
+    this.bird.anims.create({
+      key: 'fly',
+      frames: this.anims.generateFrameNumbers('bird', { start: 8, end: 15 }),
+      frameRate: 16,
+      repeat: -1,
+    });
+    this.bird.setBodySize(this.bird.width, this.bird.height - 8);
+    this.bird.anims.play('fly');
     this.bird.body.gravity.y = 600;
     this.bird.setCollideWorldBounds(true);
   }
@@ -92,14 +108,10 @@ class PlayScene extends BaseScene {
     this.pipes = this.physics.add.group();
 
     for (let i = 0; i < PIPES_TO_RENDER; i++) {
-      const upperPipe = this.pipes.create(0, 0, 'pipe')
-        .setImmovable(true)
-        .setOrigin(0, 1);
-      const lowerPipe = this.pipes.create(0, 0, 'pipe')
-        .setImmovable(true)
-        .setOrigin(0, 0);
+      const upperPipe = this.pipes.create(0, 0, 'pipe').setImmovable(true).setOrigin(0, 1);
+      const lowerPipe = this.pipes.create(0, 0, 'pipe').setImmovable(true).setOrigin(0, 0);
 
-      this.placePipe(upperPipe, lowerPipe)
+      this.placePipe(upperPipe, lowerPipe);
     }
 
     this.pipes.setVelocityX(-200);
@@ -112,23 +124,25 @@ class PlayScene extends BaseScene {
   createScore() {
     this.score = 0;
     const bestScore = localStorage.getItem('bestScore');
-    this.scoreText = this.add.text(16, 16, `Score: ${0}`, { fontSize: '32px', fill: '#000'});
-    this.add.text(16, 52, `Best score: ${bestScore || 0}`, { fontSize: '18px', fill: '#000'});
+    this.scoreText = this.add.text(16, 16, `Score: ${0}`, { fontSize: '32px', fill: '#000' });
+    this.add.text(16, 52, `Best score: ${bestScore || 0}`, { fontSize: '18px', fill: '#000' });
   }
 
   createPause() {
     this.isPaused = false;
-    const pauseButton = this.add.image(this.config.width - 10, this.config.height -10, 'pause')
+    const pauseButton = this.add
+      .image(this.config.width - 10, this.config.height - 10, 'pause')
       .setInteractive()
       .setScale(3)
       .setOrigin(1);
 
     pauseButton.on('pointerdown', () => {
       this.isPaused = true;
+      this.bird.anims.stop();
       this.physics.pause();
       this.scene.pause();
       this.scene.launch('PauseScene');
-    })
+    });
   }
 
   handleInputs() {
@@ -153,7 +167,7 @@ class PlayScene extends BaseScene {
     uPipe.y = pipeVerticalPosition;
 
     lPipe.x = uPipe.x;
-    lPipe.y = uPipe.y + pipeVerticalDistance
+    lPipe.y = uPipe.y + pipeVerticalDistance;
   }
 
   recyclePipes() {
@@ -168,7 +182,7 @@ class PlayScene extends BaseScene {
           this.increaseDifficulty();
         }
       }
-    })
+    });
   }
 
   increaseDifficulty() {
@@ -184,9 +198,9 @@ class PlayScene extends BaseScene {
   getRightMostPipe() {
     let rightMostX = 0;
 
-    this.pipes.getChildren().forEach(function(pipe) {
+    this.pipes.getChildren().forEach(function (pipe) {
       rightMostX = Math.max(pipe.x, rightMostX);
-    })
+    });
 
     return rightMostX;
   }
@@ -202,7 +216,8 @@ class PlayScene extends BaseScene {
 
   gameOver() {
     this.physics.pause();
-    this.bird.setTint(0xEE4824);
+    this.bird.setTint(0xee4824);
+    this.bird.anims.stop();
 
     this.saveBestScore();
 
@@ -211,18 +226,20 @@ class PlayScene extends BaseScene {
       callback: () => {
         this.scene.restart();
       },
-      loop: false
-    })
+      loop: false,
+    });
   }
 
   flap() {
-    if (this.isPaused) { return; }
+    if (this.isPaused) {
+      return;
+    }
     this.bird.body.velocity.y = -this.flapVelocity;
   }
 
   increaseScore() {
     this.score++;
-    this.scoreText.setText(`Score: ${this.score}`)
+    this.scoreText.setText(`Score: ${this.score}`);
   }
 }
 

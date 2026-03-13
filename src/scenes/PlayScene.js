@@ -18,9 +18,25 @@ class PlayScene extends BaseScene {
 
     this.score = 0;
     this.scoreText = '';
+
+    this.difficulties = {
+      easy: {
+        pipeHorizontalDistanceRange: [350, 450],
+        pipeVerticalDistanceRange: [150, 250],
+      },
+      medium: {
+        pipeHorizontalDistanceRange: [250, 350],
+        pipeVerticalDistanceRange: [100, 200],
+      },
+      hard: {
+        pipeHorizontalDistanceRange: [150, 250],
+        pipeVerticalDistanceRange: [50, 150],
+      },
+    }
   }
 
   create() {
+    this.currentDifficulty = 'easy';
     super.create();
     this.createBird();
     this.createPipes();
@@ -127,10 +143,11 @@ class PlayScene extends BaseScene {
   }
 
   placePipe(uPipe, lPipe) {
+    const difficulty = this.difficulties[this.currentDifficulty];
     const rightMostX = this.getRightMostPipe();
-    const pipeVerticalDistance = Phaser.Math.Between(...this.pipeVerticalDistanceRange);
+    const pipeVerticalDistance = Phaser.Math.Between(...(difficulty?.pipeVerticalDistanceRange || []));
     const pipeVerticalPosition = Phaser.Math.Between(0 + 20, this.config.height - 20 - pipeVerticalDistance);
-    const pipeHorizontalDistance = Phaser.Math.Between(...this.pipeHorizontalDistanceRange);
+    const pipeHorizontalDistance = Phaser.Math.Between(...(difficulty?.pipeHorizontalDistanceRange || []));
 
     uPipe.x = rightMostX + pipeHorizontalDistance;
     uPipe.y = pipeVerticalPosition;
@@ -148,9 +165,20 @@ class PlayScene extends BaseScene {
           this.placePipe(...tempPipes);
           this.increaseScore();
           this.saveBestScore();
+          this.increaseDifficulty();
         }
       }
     })
+  }
+
+  increaseDifficulty() {
+    this.currentDifficulty = 'easy';
+    if (this.score > 3) {
+      this.currentDifficulty = 'medium';
+    }
+    if (this.score > 6) {
+      this.currentDifficulty = 'hard';
+    }
   }
 
   getRightMostPipe() {

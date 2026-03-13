@@ -5,39 +5,38 @@ class PauseScene extends BaseScene {
     super('PauseScene', config);
 
     this.menu = [
-      { scene: 'PlayScene', text: 'Continue' },
-      { scene: 'MenuScene', text: 'Exit' },
+      { action: 'resume', scene: 'PlayScene', text: 'Continue' },
+      { action: 'exit', scene: 'MenuScene', text: 'Main Menu' },
     ];
   }
 
   create() {
     super.create();
-    this.createMenu(this.menu, this.setupMenuEvents.bind(this));
+    this.createMenu(this.menu, this.setupMenuEvents);
   }
 
-  setupMenuEvents(menuItem) {
-    const textGO = menuItem.textGO;
-    textGO.setInteractive();
+  setupMenuEvents = menuItem => {
+    const { textGO, action, scene } = menuItem;
 
-    textGO.on('pointerover', () => {
-      textGO.setStyle({ fill: '#ff0' });
-    });
+    textGO
+      .setInteractive()
+      .on('pointerover', () => textGO.setStyle({ fill: '#ff0' }))
+      .on('pointerout', () => textGO.setStyle({ fill: '#fff' }))
+      .on('pointerup', () => this.handleMenuAction(action, scene));
+  };
 
-    textGO.on('pointerout', () => {
-      textGO.setStyle({ fill: '#fff' });
-    });
-
-    textGO.on('pointerup', () => {
-      if (menuItem.scene && menuItem.text === 'Continue') {
-        // Shutting down the Pause Scene and resuming the Play Scene
+  handleMenuAction(action, scene) {
+    switch (action) {
+      case 'resume':
         this.scene.stop();
-        this.scene.resume(menuItem.scene);
-      } else {
-        // Shutting PlayScene, PauseScene and running Menu
+        this.scene.resume(scene);
+        break;
+
+      case 'exit':
         this.scene.stop('PlayScene');
-        this.scene.start(menuItem.scene);
-      }
-    });
+        this.scene.start(scene);
+        break;
+    }
   }
 }
 

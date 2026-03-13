@@ -2,16 +2,16 @@ import BaseScene from './BaseScene';
 
 class ScoreScene extends BaseScene {
   constructor(config) {
-    super('ScoreScene', {...config, canGoBack: true});
+    super('ScoreScene', { ...config, canGoBack: true });
   }
 
   create() {
     super.create();
 
-    const bestScore = localStorage.getItem('bestScore');
-    this.add
-      .text(this.cameras.main.centerX, this.cameras.main.centerY, `Best Score: ${bestScore}`, this.fontOptions)
-      .setOrigin(0.5, 0.5);
+    const { centerX, centerY } = this.cameras.main;
+    const bestScore = Number(localStorage.getItem('bestScore')) || 0;
+
+    this.add.text(centerX, centerY, `Best Score: ${bestScore}`, this.fontOptions).setOrigin(0.5);
   }
 }
 
